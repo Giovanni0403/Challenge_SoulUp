@@ -160,6 +160,8 @@ Na página de contato, preencha nome, e-mail, telefone e mensagem. Se algum camp
 
 Usamos Tailwind para adaptar o site ao celular, tablet e computador. As classes `md:` começam em 768 px. As classes `lg:` começam em 992 px, como configuramos no `src/css/main.css`.
 
+Conferimos todas as páginas do site e a responsividade no celular, tablet e computador. As páginas funcionaram corretamente nos tamanhos de tela testados.
+
 Na conferência de 12/09/2026, os comandos `npm run build` e `npm run lint` passaram. Esses comandos verificam a compilação e possíveis problemas no código. Os prints abaixo mostram o site em tamanhos de computador, tablet e celular.
 
 ## Imagens do projeto
@@ -206,4 +208,4 @@ Projeto feito pelo grupo EcoSoul, aproveitando os textos e as imagens da sprint 
 
 ## Vídeo de apresentação
 
-**Falta colocar o link do vídeo no YouTube aqui.**
+[Assista à apresentação da EcoSoul — Sprint 3](https://youtu.be/a4Mse8BFMpU)
