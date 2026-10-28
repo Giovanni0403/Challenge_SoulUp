@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>EcoSoul — Documentação DDD Sprint 4</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #0d2225; font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  h1 { font-size: 20pt; color: #075c62; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 3px solid #1f9ea6; }
+  h2 { font-size: 13pt; color: #075c62; margin: 18px 0 6px; }
+  section { break-before: page; }
+  p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.5pt; }
+  th { background: #075c62; color: #fff; text-align: left; padding: 6px 8px; }
+  td { border-bottom: 1px solid #cbd5e1; padding: 5px 8px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f1f8f8; }
+  code, .mono { font-family: Consolas, 'Courier New', monospace; font-size: 9.5pt; }
+  pre { background: #0f3034; color: #e6f4f3; padding: 10px 12px; border-radius: 6px; font-size: 9pt; white-space: pre-wrap; margin: 6px 0 12px; }
+  .verbo { font-weight: bold; font-family: Consolas, monospace; }
+  .GET { color: #047857; } .POST { color: #1d4ed8; } .PUT { color: #b45309; } .DELETE { color: #b91c1c; }
+  figure { margin: 8px 0 16px; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; }
+  figcaption { font-size: 9pt; color: #475569; margin-top: 4px; }
+  figcaption b { color: #0d2225; }
+  .diagrama { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; background: #fff; break-inside: avoid; }
+  .diagrama svg { display: block; max-height: 205mm; margin: 0 auto; }
+  .celular { width: 46%; }
+  .pendente { background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  .capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; }
+  .capa-topo { border-left: 8px solid #1f9ea6; padding-left: 18px; margin-top: 30mm; }
+  .capa-topo .disc { font-size: 11pt; letter-spacing: .12em; color: #475569; text-transform: uppercase; }
+  .capa-topo .nome { font-size: 44pt; font-weight: 800; color: #075c62; margin: 6px 0 0; line-height: 1.1; }
+  .capa-topo .sub { font-size: 16pt; color: #0d2225; }
+  .capa table { font-size: 11pt; }
+  .capa-rodape { color: #475569; font-size: 10pt; }
+</style></head>
+<body>
+
+<div class="capa">
+  <div class="capa-topo">
+    <div class="disc">Domain Driven Design Using Java · Sprint 4</div>
+    <p class="nome">EcoSoul</p>
+    <p class="sub">Mobilidade sustentável: cada viagem de transporte público vira ECO Points</p>
+  </div>
+  <div>
+    <p><b>Equipe:</b> EcoSoul &nbsp;·&nbsp; <b>Turma:</b> 1TDSPH</p>
+    <table>
+      <tr><th>Integrante</th><th style="width:30%">RM</th></tr>
+      <tr><td>Giovanni Lopez Zavam</td><td>RM 571403</td></tr><tr><td>Murilo Martins de Campos</td><td>RM 572674</td></tr><tr><td>Arthur Palacio Alves</td><td>RM 573441</td></tr><tr><td>Thiago Andrade Silva Piedade</td><td>RM 569741</td></tr>
+    </table>
+  </div>
+  <div class="capa-rodape">FIAP · Challenge SoulUp · 2026</div>
+</div>
+
+<section>
+  <h1>1. Objetivo e escopo do projeto</h1>
+  <p>A <b>EcoSoul</b> incentiva o uso de ônibus, metrô e trem. Cada viagem registrada gera <b>ECO Points</b>, e o sistema mostra quanto CO₂ aquela viagem evitou em relação ao mesmo trajeto feito de carro.</p>
+  <p>Esta entrega é a <b>API RESTful em Java com Spring Boot</b> que dá suporte ao front-end (React + Vite + TypeScript). Ela guarda os <b>usuários</b> e as <b>viagens</b> de cada um no banco <b>Oracle da FIAP</b>, valida os dados com regras de negócio e devolve respostas em JSON com os códigos HTTP corretos.</p>
+  <h2>Escopo desta sprint</h2>
+  <ul>
+    <li>CRUD completo de <b>usuários</b> e de <b>viagens</b>, com relacionamento 1 usuário : N viagens.</li>
+    <li>Arquitetura em camadas: <b>Model → DAO (com ConnectionFactory) → BO → Resource</b>.</li>
+    <li>Tratamento centralizado de exceções e liberação de acesso do front-end com <b>CorsFilter</b>.</li>
+    <li>Integração com o front-end publicado na Vercel e deploy da API em servidor de aplicação (Render).</li>
+  </ul>
+  <p>Fora do escopo: validação automática do trajeto por GPS/IA e a troca de pontos por benefícios. Essas funções aparecem no protótipo do front-end como proposta futura.</p>
+
+  <h1 style="margin-top:22px">2. Principais funcionalidades</h1>
+  <table>
+    <tr><th style="width:28%">Funcionalidade</th><th>O que faz</th></tr>
+    <tr><td>Cadastro de usuários</td><td>Cria, lista, consulta, edita e exclui usuários. O e-mail é único (409 se repetido).</td></tr>
+    <tr><td>Registro de viagens</td><td>Cria, lista, consulta, edita e exclui viagens de ônibus, metrô ou trem, sempre ligadas a um usuário existente.</td></tr>
+    <tr><td>Histórico por usuário</td><td><code>GET /usuarios/{id}/viagens</code> devolve só as viagens daquela pessoa.</td></tr>
+    <tr><td>Regras de negócio (BO)</td><td>Origem e destino de 2 a 80 caracteres e diferentes entre si; distância entre 0 e 500 km; data não pode estar no futuro; nome de 3 a 100 caracteres; e-mail válido; usuário com viagens não pode ser excluído.</td></tr>
+    <tr><td>Erros padronizados</td><td>Toda falha volta em JSON <code>{ status, erro, mensagem }</code>, que o front-end mostra para o usuário.</td></tr>
+    <tr><td>Integração com o front</td><td><code>CorsFilter</code> libera o acesso do site; o front calcula ECO Points (10 por km) e CO₂ evitado a partir dos dados da API.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h1>3. Tabela de endpoints (API RESTful)</h1>
+  <p>URL base local: <code>http://localhost:8080</code> · URL publicada: <span class="pendente">A PREENCHER após o deploy no Render</span></p>
+  <table>
+    <tr><th style="width:9%">Verbo</th><th style="width:23%">URI</th><th>Descrição</th><th style="width:16%">Corpo</th><th style="width:19%">Status esperados</th></tr>
+    <tr><td class="verbo GET">GET</td><td class="mono">/viagens</td><td>Lista todas as viagens (com o usuário dono)</td><td class="mono">—</td><td class="mono">200, 500</td></tr><tr><td class="verbo GET">GET</td><td class="mono">/viagens/{id}</td><td>Busca uma viagem pelo id</td><td class="mono">—</td><td class="mono">200, 400, 404, 500</td></tr><tr><td class="verbo POST">POST</td><td class="mono">/viagens</td><td>Cadastra uma viagem</td><td class="mono">Viagem (sem id)</td><td class="mono">201, 400, 500</td></tr><tr><td class="verbo PUT">PUT</td><td class="mono">/viagens/{id}</td><td>Atualiza uma viagem</td><td class="mono">Viagem (sem id)</td><td class="mono">200, 400, 404, 500</td></tr><tr><td class="verbo DELETE">DELETE</td><td class="mono">/viagens/{id}</td><td>Exclui uma viagem</td><td class="mono">—</td><td class="mono">204, 400, 404, 500</td></tr><tr><td class="verbo GET">GET</td><td class="mono">/usuarios</td><td>Lista todos os usuários</td><td class="mono">—</td><td class="mono">200, 500</td></tr><tr><td class="verbo GET">GET</td><td class="mono">/usuarios/{id}</td><td>Busca um usuário pelo id</td><td class="mono">—</td><td class="mono">200, 400, 404, 500</td></tr><tr><td class="verbo GET">GET</td><td class="mono">/usuarios/{id}/viagens</td><td>Lista as viagens de um usuário</td><td class="mono">—</td><td class="mono">200, 400, 404, 500</td></tr><tr><td class="verbo POST">POST</td><td class="mono">/usuarios</td><td>Cadastra um usuário</td><td class="mono">{ nome, email }</td><td class="mono">201, 400, 409, 500</td></tr><tr><td class="verbo PUT">PUT</td><td class="mono">/usuarios/{id}</td><td>Atualiza nome e e-mail</td><td class="mono">{ nome, email }</td><td class="mono">200, 400, 404, 409, 500</td></tr><tr><td class="verbo DELETE">DELETE</td><td class="mono">/usuarios/{id}</td><td>Exclui um usuário sem viagens</td><td class="mono">—</td><td class="mono">204, 400, 404, 409, 500</td></tr>
+  </table>
+  <h2>Significado dos códigos de status</h2>
+  <table>
+    <tr><th style="width:28%">Status</th><th>Quando acontece</th></tr>
+    <tr><td class="mono">200 OK</td><td>Consulta ou atualização feita com sucesso.</td></tr><tr><td class="mono">201 Created</td><td>Registro criado. O cabeçalho Location traz o endereço do novo recurso.</td></tr><tr><td class="mono">204 No Content</td><td>Registro excluído.</td></tr><tr><td class="mono">400 Bad Request</td><td>Dados inválidos (regra de negócio, JSON mal formado ou id não numérico).</td></tr><tr><td class="mono">404 Not Found</td><td>Registro ou endpoint inexistente.</td></tr><tr><td class="mono">409 Conflict</td><td>E-mail já cadastrado ou usuário com viagens não pode ser excluído.</td></tr><tr><td class="mono">500 Internal Server Error</td><td>Falha ao acessar o banco de dados ou erro inesperado.</td></tr>
+  </table>
+  <h2>Exemplos</h2>
+  <p><b>POST /viagens</b> (corpo enviado):</p>
+<pre>{
+  "usuario": { "id": 1 },
+  "origem": "Estação Sé",
+  "destino": "FIAP Paulista",
+  "transporte": "METRO",
+  "distanciaKm": 4.5,
+  "data": "2026-10-20"
+}</pre>
+  <p><b>Resposta 201</b>:</p>
+<pre>{ "id": 1, "usuario": { "id": 1, "nome": "Ana Souza", "email": "ana.souza@email.com", "dataCadastro": "2026-10-01" },
+  "origem": "Estação Sé", "destino": "FIAP Paulista", "transporte": "METRO", "distanciaKm": 4.5, "data": "2026-10-20" }</pre>
+  <p><b>Resposta 409</b> (POST /usuarios com e-mail repetido):</p>
+<pre>{ "status": 409, "erro": "Conflict", "mensagem": "Já existe um usuário com o e-mail ana.souza@email.com." }</pre>
+</section>
+
+<section>
+  <h1>4. Protótipo: telas implementadas</h1>
+  <p>Capturas reais do front-end funcionando com esta API e o banco Oracle.</p>
+  <figure><img src="img/01-lista-viagens.png" alt="Lista de viagens"><figcaption><b>Figura 1: Lista de viagens.</b> Consome GET /viagens. Mostra cada viagem com o usuário dono e soma os ECO Points e o CO₂ evitado.</figcaption></figure><figure><img src="img/02-detalhe-viagem.png" alt="Detalhe da viagem"><figcaption><b>Figura 2: Detalhe da viagem.</b> Consome GET /viagens/{id}. A partir dela é possível editar (PUT) ou excluir (DELETE) a viagem.</figcaption></figure><figure><img src="img/03-cadastro-viagem.png" alt="Cadastro de viagem"><figcaption><b>Figura 3: Cadastro de viagem.</b> Envia POST /viagens. O campo "Quem fez a viagem?" é preenchido com GET /usuarios.</figcaption></figure><figure><img src="img/04-usuarios-erro-409.png" alt="Usuários: e-mail repetido"><figcaption><b>Figura 4: Usuários: e-mail repetido.</b> Lista (GET /usuarios) e cadastro (POST /usuarios). Ao repetir um e-mail, a API responde 409 e a mensagem dela aparece na tela.</figcaption></figure><figure><img src="img/05-perfil-usuario.png" alt="Perfil do usuário"><figcaption><b>Figura 5: Perfil do usuário.</b> Consome GET /usuarios/{id} e GET /usuarios/{id}/viagens. Permite editar (PUT) e excluir (DELETE).</figcaption></figure><figure><img src="img/06-excluir-usuario-409.png" alt="Regra de negócio na exclusão"><figcaption><b>Figura 6: Regra de negócio na exclusão.</b> O UsuarioBO impede excluir um usuário que ainda tem viagens: a API responde 409 com a explicação.</figcaption></figure>
+  <figure><img class="celular" src="img/07-viagens-celular.png" alt="Versão celular"><figcaption><b>Figura 7: Versão celular.</b> A mesma tela de viagens em um celular (390 px de largura).</figcaption></figure>
+</section>
+
+<section>
+  <h1>5. Modelo Entidade-Relacionamento (MER)</h1>
+  <p>Duas entidades no Oracle. Um <b>usuário registra zero ou muitas viagens</b>; cada <b>viagem pertence a exatamente um usuário</b> (chave estrangeira <code>ID_USUARIO</code>).</p>
+  <div class="diagrama"><svg viewBox="0 0 880 246" width="100%" xmlns="http://www.w3.org/2000/svg"><defs>
+  <marker id="heranca" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L13,7 L1,13 Z" fill="#fff" stroke="#334155" stroke-width="1.3"/></marker>
+  <marker id="seta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.3"/></marker>
+</defs><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="50" width="330" height="134" rx="6" fill="#fff" stroke="#0f3034" stroke-width="1.5"/><path d="M20,80 L20,56 Q20,50 26,50 L344,50 Q350,50 350,56 L350,80 Z" fill="#075c62"/><text x="185" y="70" text-anchor="middle" font-weight="bold" fill="#fff">T_ECO_USUARIO</text><text x="30" y="98" font-weight="bold" fill="#b45309">PK</text><text x="66" y="98" text-decoration="underline">ID_USUARIO</text><text x="340" y="98" text-anchor="end" fill="#475569">NUMBER</text><text x="66" y="122">NM_USUARIO</text><text x="340" y="122" text-anchor="end" fill="#475569">VARCHAR2(100)</text><text x="30" y="146" font-weight="bold" fill="#1d4ed8">UK</text><text x="66" y="146">DS_EMAIL</text><text x="340" y="146" text-anchor="end" fill="#475569">VARCHAR2(120)</text><text x="66" y="170">DT_CADASTRO</text><text x="340" y="170" text-anchor="end" fill="#475569">DATE</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="530" y="20" width="330" height="206" rx="6" fill="#fff" stroke="#0f3034" stroke-width="1.5"/><path d="M530,50 L530,26 Q530,20 536,20 L854,20 Q860,20 860,26 L860,50 Z" fill="#075c62"/><text x="695" y="40" text-anchor="middle" font-weight="bold" fill="#fff">T_ECO_VIAGEM</text><text x="540" y="68" font-weight="bold" fill="#b45309">PK</text><text x="576" y="68" text-decoration="underline">ID_VIAGEM</text><text x="850" y="68" text-anchor="end" fill="#475569">NUMBER</text><text x="540" y="92" font-weight="bold" fill="#1d4ed8">FK</text><text x="576" y="92">ID_USUARIO</text><text x="850" y="92" text-anchor="end" fill="#475569">NUMBER</text><text x="576" y="116">DS_ORIGEM</text><text x="850" y="116" text-anchor="end" fill="#475569">VARCHAR2(80)</text><text x="576" y="140">DS_DESTINO</text><text x="850" y="140" text-anchor="end" fill="#475569">VARCHAR2(80)</text><text x="576" y="164">TP_TRANSPORTE</text><text x="850" y="164" text-anchor="end" fill="#475569">VARCHAR2(10)</text><text x="576" y="188">NR_DISTANCIA_KM</text><text x="850" y="188" text-anchor="end" fill="#475569">NUMBER(6,2)</text><text x="576" y="212">DT_VIAGEM</text><text x="850" y="212" text-anchor="end" fill="#475569">DATE</text></g><path d="M350,94 L440,94 L440,88 L530,88" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M362,85 L362,103" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M369,85 L369,103" fill="none" stroke="#334155" stroke-width="1.3"/><circle cx="504" cy="88" r="6" fill="#fff" stroke="#334155" stroke-width="1.3"/><path d="M516,88 L530,79" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M516,88 L530,97" fill="none" stroke="#334155" stroke-width="1.3"/><text x="366" y="80" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225">1</text><text x="508" y="74" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225">0..N</text><text x="405" y="116" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225" font-style="italic">registra</text></svg></div>
+  <h2>Restrições</h2>
+  <table>
+    <tr><th style="width:36%">Restrição</th><th>Regra</th></tr>
+    <tr><td class="mono">PK_ECO_USUARIO / PK_ECO_VIAGEM</td><td>Chaves primárias geradas automaticamente (IDENTITY).</td></tr>
+    <tr><td class="mono">UN_ECO_USUARIO_EMAIL</td><td>Não pode haver dois usuários com o mesmo e-mail.</td></tr>
+    <tr><td class="mono">FK_ECO_VIAGEM_USUARIO</td><td>Toda viagem aponta para um usuário existente.</td></tr>
+    <tr><td class="mono">CK_ECO_VIAGEM_TRANSPORTE</td><td>Transporte só pode ser ONIBUS, METRO ou TREM.</td></tr>
+    <tr><td class="mono">CK_ECO_VIAGEM_DISTANCIA</td><td>Distância maior que 0 e no máximo 500 km.</td></tr>
+  </table>
+  <p>Legenda: <b style="color:#b45309">PK</b> chave primária · <b style="color:#1d4ed8">FK</b> chave estrangeira · <b style="color:#1d4ed8">UK</b> valor único. O script completo está em <code>sql/script.sql</code>.</p>
+</section>
+
+<section>
+  <h1>6. Diagrama de classes</h1>
+  <p>Pacote base: <code>br.com.fiap.ecosoul</code>. O diagrama foi dividido em quatro partes para ficar legível.</p>
+  <h2>6.1 Camada Model: entidades e associação</h2>
+  <p><code>Viagem</code> tem um atributo <code>usuario: Usuario</code> (associação muitos-para-um) e um <code>transporte</code> do tipo enumerado <code>TipoTransporte</code>.</p>
+  <div class="diagrama"><svg viewBox="0 0 785 458" width="100%" xmlns="http://www.w3.org/2000/svg"><defs>
+  <marker id="heranca" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L13,7 L1,13 Z" fill="#fff" stroke="#334155" stroke-width="1.3"/></marker>
+  <marker id="seta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.3"/></marker>
+</defs><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="40" width="302" height="162" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="40" width="302" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="171" y="57" text-anchor="middle" font-weight="bold" fill="#075c62">Usuario</text><text x="30" y="84">- id: Long</text><text x="30" y="101">- nome: String</text><text x="30" y="118">- email: String</text><text x="30" y="135">- dataCadastro: LocalDate</text><line x1="20" y1="143" x2="322" y2="143" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="160">+ Usuario()</text><text x="30" y="177">+ Usuario(id, nome, email, dataCadastro)</text><text x="30" y="194">+ getters / setters</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="470" y="20" width="295" height="230" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="470" y="20" width="295" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="617.5" y="37" text-anchor="middle" font-weight="bold" fill="#075c62">Viagem</text><text x="480" y="64">- id: Long</text><text x="480" y="81">- usuario: Usuario</text><text x="480" y="98">- origem: String</text><text x="480" y="115">- destino: String</text><text x="480" y="132">- transporte: TipoTransporte</text><text x="480" y="149">- distanciaKm: Double</text><text x="480" y="166">- data: LocalDate</text><line x1="470" y1="174" x2="765" y2="174" stroke="#0f3034" stroke-width="1.4"/><text x="480" y="191">+ Viagem()</text><text x="480" y="208">+ Viagem(id, usuario, origem, destino,</text><text x="480" y="225">         transporte, distanciaKm, data)</text><text x="480" y="242">+ getters / setters</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="558" y="310" width="119" height="128" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="558" y="310" width="119" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="617.5" y="327" text-anchor="middle" font-style="italic">«enumeration»</text><text x="617.5" y="344" text-anchor="middle" font-weight="bold" fill="#075c62">TipoTransporte</text><text x="568" y="371">ONIBUS</text><text x="568" y="388">METRO</text><text x="568" y="405">TREM</text><line x1="558" y1="413" x2="677" y2="413" stroke="#0f3034" stroke-width="1.4"/></g><path d="M470,121 L322,121" fill="none" stroke="#334155" stroke-width="1.3" marker-end="url(#seta)"/><text x="336" y="113" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225">1</text><text x="460" y="113" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225">0..*</text><text x="396" y="141" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225" font-style="italic">pertence a</text><path d="M617.5,250 L617.5,310" fill="none" stroke="#334155" stroke-width="1.3" marker-end="url(#seta)"/><text x="625.5" y="284" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#0d2225">transporte  1</text></svg></div>
+  <p style="margin-top:14px">Nas próximas páginas: <b>6.2</b> exceções e infraestrutura; <b>6.3</b> e <b>6.4</b> as camadas <b>Resource → BO → DAO → ConnectionFactory</b> de cada entidade. Setas tracejadas indicam dependência (uma classe usa a outra); o triângulo vazado indica herança/implementação.</p>
+</section>
+
+<section>
+  <h2 style="margin-top:0">6.2 Exceções (herança) e infraestrutura</h2>
+  <p>As quatro exceções do projeto <b>herdam</b> de <code>RuntimeException</code>. O <code>TratadorDeErros</code> trata todas elas e devolve o status HTTP correto, e o <code>CorsFilter</code> <b>implementa</b> a interface <code>Filter</code> para liberar o acesso do front-end.</p>
+  <div class="diagrama"><svg viewBox="0 0 810 839" width="100%" xmlns="http://www.w3.org/2000/svg"><defs>
+  <marker id="heranca" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L13,7 L1,13 Z" fill="#fff" stroke="#334155" stroke-width="1.3"/></marker>
+  <marker id="seta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.3"/></marker>
+</defs><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="338.5" y="20" width="133" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="338.5" y="20" width="133" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="405" y="37" text-anchor="middle" font-style="italic">«java.lang»</text><text x="405" y="54" text-anchor="middle" font-weight="bold" fill="#075c62">RuntimeException</text><line x1="338.5" y1="89" x2="471.5" y2="89" stroke="#0f3034" stroke-width="1.4"/></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="40" y="154" width="310" height="77" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="40" y="154" width="310" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="195" y="171" text-anchor="middle" font-weight="bold" fill="#075c62">ValidacaoException</text><line x1="40" y1="206" x2="350" y2="206" stroke="#0f3034" stroke-width="1.4"/><text x="50" y="223">+ ValidacaoException(mensagem: String)</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="460" y="154" width="310" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="460" y="154" width="310" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="615" y="171" text-anchor="middle" font-weight="bold" fill="#075c62">RecursoNaoEncontradoException</text><line x1="460" y1="206" x2="770" y2="206" stroke="#0f3034" stroke-width="1.4"/><text x="470" y="223">+ RecursoNaoEncontradoException(</text><text x="470" y="240">      mensagem: String)</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="40" y="288" width="310" height="77" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="40" y="288" width="310" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="195" y="305" text-anchor="middle" font-weight="bold" fill="#075c62">ConflitoException</text><line x1="40" y1="340" x2="350" y2="340" stroke="#0f3034" stroke-width="1.4"/><text x="50" y="357">+ ConflitoException(mensagem: String)</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="460" y="288" width="310" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="460" y="288" width="310" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="615" y="305" text-anchor="middle" font-weight="bold" fill="#075c62">BancoDeDadosException</text><line x1="460" y1="340" x2="770" y2="340" stroke="#0f3034" stroke-width="1.4"/><text x="470" y="357">+ BancoDeDadosException(</text><text x="470" y="374">      mensagem: String, causa: Throwable)</text></g><path d="M405,326.5 L405,114" fill="none" stroke="#334155" stroke-width="1.3" marker-end="url(#heranca)"/><path d="M405,192.5 L350,192.5" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M405,326.5 L350,326.5" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M405,201 L460,201" fill="none" stroke="#334155" stroke-width="1.3"/><path d="M405,335 L460,335" fill="none" stroke="#334155" stroke-width="1.3"/><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="194" y="435" width="422" height="230" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="194" y="435" width="422" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="405" y="452" text-anchor="middle" font-style="italic">«@RestControllerAdvice»</text><text x="405" y="469" text-anchor="middle" font-weight="bold" fill="#075c62">TratadorDeErros</text><line x1="194" y1="504" x2="616" y2="504" stroke="#0f3034" stroke-width="1.4"/><text x="204" y="521">+ validacao(ValidacaoException) -&gt; 400</text><text x="204" y="538">+ naoEncontrado(RecursoNaoEncontradoException) -&gt; 404</text><text x="204" y="555">+ conflito(ConflitoException) -&gt; 409</text><text x="204" y="572">+ rotaInexistente(NoResourceFoundException) -&gt; 404</text><text x="204" y="589">+ jsonInvalido(HttpMessageNotReadableException) -&gt; 400</text><text x="204" y="606">+ parametroInvalido(MethodArgumentTypeMismatch...) -&gt; 400</text><text x="204" y="623">+ bancoDeDados(BancoDeDadosException) -&gt; 500</text><text x="204" y="640">+ erroInesperado(Exception) -&gt; 500</text><text x="204" y="657">- resposta(status: HttpStatus, mensagem: String)</text></g><path d="M405,435 L405,326.5" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="413" y="413" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«trata»</text><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="40" y="725" width="253" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="40" y="725" width="253" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="166.5" y="742" text-anchor="middle" font-style="italic">«@Component»</text><text x="166.5" y="759" text-anchor="middle" font-weight="bold" fill="#075c62">CorsFilter</text><line x1="40" y1="794" x2="293" y2="794" stroke="#0f3034" stroke-width="1.4"/><text x="50" y="811">+ doFilter(req, res, chain): void</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="423" y="725" width="253" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="423" y="725" width="253" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="549.5" y="742" text-anchor="middle" font-style="italic">«interface» jakarta.servlet</text><text x="549.5" y="759" text-anchor="middle" font-weight="bold" fill="#075c62">Filter</text><line x1="423" y1="794" x2="676" y2="794" stroke="#0f3034" stroke-width="1.4"/><text x="433" y="811">+ doFilter(req, res, chain): void</text></g><path d="M293,772 L423,772" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#heranca)"/><text x="358" y="764" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">implementa</text></svg></div>
+</section>
+
+<section>
+  <h2 style="margin-top:0">6.3 Camadas de Usuário</h2>
+  <p><code>UsuarioResource</code> recebe a requisição, <code>UsuarioBO</code> valida e aplica as regras, e <code>UsuarioDAO</code> executa o SQL. O <code>UsuarioBO</code> também usa o <code>ViagemDAO</code> para impedir a exclusão de um usuário que tem viagens.</p>
+  <div class="diagrama"><svg viewBox="0 0 629 872" width="100%" xmlns="http://www.w3.org/2000/svg"><defs>
+  <marker id="heranca" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L13,7 L1,13 Z" fill="#fff" stroke="#334155" stroke-width="1.3"/></marker>
+  <marker id="seta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.3"/></marker>
+</defs><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="20" width="415" height="179" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="20" width="415" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="227.5" y="37" text-anchor="middle" font-style="italic">«@RestController /usuarios»</text><text x="227.5" y="54" text-anchor="middle" font-weight="bold" fill="#075c62">UsuarioResource</text><text x="30" y="81">- usuarioBO: UsuarioBO</text><line x1="20" y1="89" x2="435" y2="89" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="106">+ listar(): List&lt;Usuario&gt;</text><text x="30" y="123">+ buscar(id: Long): Usuario</text><text x="30" y="140">+ listarViagens(id: Long): List&lt;Viagem&gt;</text><text x="30" y="157">+ cadastrar(usuario: Usuario): ResponseEntity&lt;Usuario&gt;</text><text x="30" y="174">+ atualizar(id: Long, usuario: Usuario): Usuario</text><text x="30" y="191">+ excluir(id: Long): ResponseEntity&lt;Void&gt;</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="249" width="415" height="230" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="249" width="415" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="227.5" y="266" text-anchor="middle" font-weight="bold" fill="#075c62">UsuarioBO</text><text x="30" y="293">- usuarioDAO: UsuarioDAO</text><text x="30" y="310">- viagemDAO: ViagemDAO</text><line x1="20" y1="318" x2="435" y2="318" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="335">+ listar(): List&lt;Usuario&gt;</text><text x="30" y="352">+ buscarPorId(id: Long): Usuario</text><text x="30" y="369">+ listarViagens(id: Long): List&lt;Viagem&gt;</text><text x="30" y="386">+ cadastrar(usuario: Usuario): Usuario</text><text x="30" y="403">+ atualizar(id: Long, usuario: Usuario): Usuario</text><text x="30" y="420">+ excluir(id: Long): void</text><text x="30" y="437">- verificarEmailDisponivel(email: String, idAtual: Long)</text><text x="30" y="454">- validarId(id: Long): void</text><text x="30" y="471">- validar(usuario: Usuario): void</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="529" width="415" height="179" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="529" width="415" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="227.5" y="546" text-anchor="middle" font-weight="bold" fill="#075c62">UsuarioDAO</text><line x1="20" y1="581" x2="435" y2="581" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="598">+ listar(): List&lt;Usuario&gt;</text><text x="30" y="615">+ buscarPorId(id: Long): Usuario</text><text x="30" y="632">+ buscarPorEmail(email: String): Usuario</text><text x="30" y="649">+ inserir(usuario: Usuario): Usuario</text><text x="30" y="666">+ atualizar(usuario: Usuario): boolean</text><text x="30" y="683">+ excluir(id: Long): boolean</text><text x="30" y="700">- montarUsuario(rs: ResultSet): Usuario</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="758" width="415" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="758" width="415" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="227.5" y="775" text-anchor="middle" font-weight="bold" fill="#075c62">ConnectionFactory</text><text x="30" y="802">- URL_PADRAO: String {static}</text><line x1="20" y1="810" x2="435" y2="810" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="827">+ getConnection(): Connection {static}</text><text x="30" y="844">- lerVariavel(nome: String, padrao: String): String</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="525" y="529" width="84" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="525" y="529" width="84" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="567" y="546" text-anchor="middle" font-style="italic">«DAO»</text><text x="567" y="563" text-anchor="middle" font-weight="bold" fill="#075c62">ViagemDAO</text><line x1="525" y1="598" x2="609" y2="598" stroke="#0f3034" stroke-width="1.4"/></g><path d="M227.5,199 L227.5,249" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="235.5" y="228" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M227.5,479 L227.5,529" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="235.5" y="508" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M227.5,708 L227.5,758" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="235.5" y="737" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M435,459 L567,459 L567,529" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="575" y="493" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M567,623 L567,805 L435,805" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/></svg></div>
+</section>
+
+<section>
+  <h2 style="margin-top:0">6.4 Camadas de Viagem</h2>
+  <p>Mesmo fluxo para viagens. O <code>ViagemBO</code> usa o <code>UsuarioDAO</code> para conferir se o usuário dono da viagem existe antes de gravar.</p>
+  <div class="diagrama"><svg viewBox="0 0 608 906" width="100%" xmlns="http://www.w3.org/2000/svg"><defs>
+  <marker id="heranca" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L13,7 L1,13 Z" fill="#fff" stroke="#334155" stroke-width="1.3"/></marker>
+  <marker id="seta" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+    <path d="M1,1 L11,6 L1,11" fill="none" stroke="#334155" stroke-width="1.3"/></marker>
+</defs><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="20" width="387" height="162" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="20" width="387" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="213.5" y="37" text-anchor="middle" font-style="italic">«@RestController /viagens»</text><text x="213.5" y="54" text-anchor="middle" font-weight="bold" fill="#075c62">ViagemResource</text><text x="30" y="81">- viagemBO: ViagemBO</text><line x1="20" y1="89" x2="407" y2="89" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="106">+ listar(): List&lt;Viagem&gt;</text><text x="30" y="123">+ buscar(id: Long): Viagem</text><text x="30" y="140">+ cadastrar(viagem: Viagem): ResponseEntity&lt;Viagem&gt;</text><text x="30" y="157">+ atualizar(id: Long, viagem: Viagem): Viagem</text><text x="30" y="174">+ excluir(id: Long): ResponseEntity&lt;Void&gt;</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="232" width="387" height="230" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="232" width="387" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="213.5" y="249" text-anchor="middle" font-weight="bold" fill="#075c62">ViagemBO</text><text x="30" y="276">- viagemDAO: ViagemDAO</text><text x="30" y="293">- usuarioDAO: UsuarioDAO</text><line x1="20" y1="301" x2="407" y2="301" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="318">+ listar(): List&lt;Viagem&gt;</text><text x="30" y="335">+ buscarPorId(id: Long): Viagem</text><text x="30" y="352">+ cadastrar(viagem: Viagem): Viagem</text><text x="30" y="369">+ atualizar(id: Long, viagem: Viagem): Viagem</text><text x="30" y="386">+ excluir(id: Long): void</text><text x="30" y="403">- buscarDono(viagem: Viagem): Usuario</text><text x="30" y="420">- validarId(id: Long): void</text><text x="30" y="437">- validar(viagem: Viagem): void</text><text x="30" y="454">- validarTexto(valor: String, campo: String): String</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="512" width="387" height="230" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="512" width="387" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="213.5" y="529" text-anchor="middle" font-weight="bold" fill="#075c62">ViagemDAO</text><text x="30" y="556">- SELECT_BASE: String</text><text x="30" y="573">- ORDEM: String</text><line x1="20" y1="581" x2="407" y2="581" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="598">+ listar(): List&lt;Viagem&gt;</text><text x="30" y="615">+ listarPorUsuario(idUsuario: Long): List&lt;Viagem&gt;</text><text x="30" y="632">+ contarPorUsuario(idUsuario: Long): int</text><text x="30" y="649">+ buscarPorId(id: Long): Viagem</text><text x="30" y="666">+ inserir(viagem: Viagem): Viagem</text><text x="30" y="683">+ atualizar(viagem: Viagem): boolean</text><text x="30" y="700">+ excluir(id: Long): boolean</text><text x="30" y="717">- preencherCampos(stmt, viagem): void</text><text x="30" y="734">- montarViagem(rs: ResultSet): Viagem</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="20" y="792" width="387" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="20" y="792" width="387" height="27" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="213.5" y="809" text-anchor="middle" font-weight="bold" fill="#075c62">ConnectionFactory</text><text x="30" y="836">- URL_PADRAO: String {static}</text><line x1="20" y1="844" x2="407" y2="844" stroke="#0f3034" stroke-width="1.4"/><text x="30" y="861">+ getConnection(): Connection {static}</text><text x="30" y="878">- lerVariavel(nome: String, padrao: String): String</text></g><g font-family="Consolas, 'Courier New', monospace" font-size="12" fill="#0d2225"><rect x="497" y="512" width="91" height="94" fill="#ffffff" stroke="#0f3034" stroke-width="1.4"/><rect x="497" y="512" width="91" height="44" fill="#e6f4f3" stroke="#0f3034" stroke-width="1.4"/><text x="542.5" y="529" text-anchor="middle" font-style="italic">«DAO»</text><text x="542.5" y="546" text-anchor="middle" font-weight="bold" fill="#075c62">UsuarioDAO</text><line x1="497" y1="581" x2="588" y2="581" stroke="#0f3034" stroke-width="1.4"/></g><path d="M213.5,182 L213.5,232" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="221.5" y="211" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M213.5,462 L213.5,512" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="221.5" y="491" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M213.5,742 L213.5,792" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="221.5" y="771" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M407,442 L542.5,442 L542.5,512" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/><text x="550.5" y="476" text-anchor="start" font-family="Segoe UI, Arial, sans-serif" font-size="11" fill="#0d2225" font-style="italic">«use»</text><path d="M542.5,606 L542.5,839 L407,839" fill="none" stroke="#334155" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#seta)"/></svg></div>
+</section>
+
+<section>
+  <h1>7. Procedimentos para rodar a aplicação</h1>
+  <h2>Ferramentas e versões</h2>
+  <table>
+    <tr><th style="width:32%">Ferramenta</th><th>Versão / observação</th></tr>
+    <tr><td>Java JDK</td><td>21 ou superior (testado com JDK 25)</td></tr>
+    <tr><td>Spring Boot</td><td>4.1.2 (dependências: Spring Web MVC e driver Oracle <code>ojdbc17</code>)</td></tr>
+    <tr><td>Maven</td><td>Maven Wrapper incluso (<code>mvnw</code> / <code>mvnw.cmd</code>), não precisa instalar</td></tr>
+    <tr><td>IDE</td><td>IntelliJ IDEA (recomendado) ou VS Code com Extension Pack for Java</td></tr>
+    <tr><td>Banco de dados</td><td>Oracle da FIAP (<code>oracle.fiap.com.br:1521/ORCL</code>) + Oracle SQL Developer</td></tr>
+    <tr><td>Front-end (opcional)</td><td>Node.js 20.19+ ou 22.12+ e npm</td></tr>
+  </table>
+
+  <h2>Passo a passo</h2>
+  <ol>
+    <li><b>Banco:</b> abra o SQL Developer, conecte com o usuário <code>rmXXXXXX</code> e execute <code>EcoSoul-API/sql/script.sql</code> (F5). Ele cria as tabelas e insere dados de exemplo.</li>
+    <li><b>Importar no IntelliJ:</b> <i>File → Open</i> e selecione a pasta <code>EcoSoul-API</code> (onde está o <code>pom.xml</code>). Aguarde o Maven baixar as dependências.</li>
+    <li><b>Credenciais:</b> em <i>Run → Edit Configurations → EcoSoulApiApplication → Environment variables</i>, adicione <code>DB_USER=rmXXXXXX;DB_PASSWORD=sua_senha</code>. A senha nunca fica no código.</li>
+    <li><b>Executar:</b> rode a classe <code>EcoSoulApiApplication</code>, ou no terminal, dentro de <code>EcoSoul-API</code>:
+<pre>mvnw.cmd spring-boot:run        (Windows)
+./mvnw spring-boot:run          (Linux/macOS)</pre></li>
+    <li><b>Testar:</b> acesse <code>http://localhost:8080/viagens</code> e <code>http://localhost:8080/usuarios</code> no navegador, ou use Postman/Insomnia com os endpoints da seção 3.</li>
+    <li><b>Front-end (opcional):</b> na pasta <code>EcoSoul</code>, crie um arquivo <code>.env</code> com <code>VITE_API_URL=http://localhost:8080</code> e rode <code>npm i</code> e <code>npm run dev</code>.</li>
+  </ol>
+
+  <h2>Deploy</h2>
+  <p>A API é publicada no <b>Render</b> usando o <code>Dockerfile</code> da pasta <code>EcoSoul-API</code> (Root Directory <code>EcoSoul-API</code>, runtime Docker), com <code>DB_USER</code> e <code>DB_PASSWORD</code> cadastrados como variáveis de ambiente.</p>
+  <table>
+    <tr><th style="width:32%">Item</th><th>Link</th></tr>
+    <tr><td>Repositório GitHub</td><td>https://github.com/Giovanni0403/Challenge_SoulUp</td></tr>
+    <tr><td>API publicada (Render)</td><td><span class="pendente">A PREENCHER</span></td></tr>
+    <tr><td>Front-end (Vercel)</td><td><span class="pendente">A PREENCHER</span></td></tr>
+  </table>
+</section>
+
+</body></html>
