@@ -1,15 +1,29 @@
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Botao } from '../../components/Botao/Botao';
 import Card from '../../components/Card/Card';
 import TituloPagina from '../../components/TituloPagina/TituloPagina';
+import { useAviso } from '../../contexto/AvisoContexto';
 import { features } from '../../dados/project';
-import NaoEncontrada from '../NaoEncontrada/index';
 
 export default function Funcionalidade() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { mostrarAviso } = useAviso();
   const feature = features.find((item) => item.slug === slug);
-  if (!feature) return <NaoEncontrada />;
+
+  // Se o endereço não existir, volta para a lista e explica o motivo.
+  useEffect(() => {
+    if (!feature) {
+      mostrarAviso(
+        `Não encontramos a funcionalidade "${slug}". Escolha uma das telas abaixo.`,
+        'erro'
+      );
+      navigate('/app', { replace: true });
+    }
+  }, [feature, slug, navigate, mostrarAviso]);
+
+  if (!feature) return null;
   return (
     <>
       <TituloPagina
@@ -39,8 +53,7 @@ export default function Funcionalidade() {
             ))}
           </ol>
           <p className="mb-6 text-sm text-slate-600">
-            Tela ilustrativa da Sprint 2, integrada à apresentação em React. As
-            operações do app ainda não estão disponíveis.
+            Tela ilustrativa do protótipo do aplicativo EcoSoul.
           </p>
           <Botao onClick={() => navigate('/app')}>
             ← Voltar para o aplicativo
