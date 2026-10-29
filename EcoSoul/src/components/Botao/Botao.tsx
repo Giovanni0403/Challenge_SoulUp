@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import type { VarianteBotao } from '../../dados/tipos';
 
 type BotaoProps = {
   children: ReactNode;
   type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary';
+  variant?: VarianteBotao;
   className?: string;
   onClick?: () => void;
+  disabled?: boolean;
   id?: string;
   'aria-label'?: string;
   'aria-expanded'?: boolean;
@@ -16,13 +18,13 @@ type BotaoProps = {
 type LinkBotaoProps = {
   children: ReactNode;
   to: string;
-  variant?: 'primary' | 'secondary';
+  variant?: VarianteBotao;
   className?: string;
 };
 
 function definirEstilo(secundario: boolean) {
   const estiloBase =
-    'inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 py-3 text-center font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#075c62]';
+    'inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 py-3 text-center font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#075c62]';
 
   if (secundario) {
     return (
@@ -45,6 +47,7 @@ export function Botao(props: BotaoProps) {
         (props.className || '')
       }
       onClick={props.onClick}
+      disabled={props.disabled}
       aria-label={props['aria-label']}
       aria-expanded={props['aria-expanded']}
       aria-controls={props['aria-controls']}
