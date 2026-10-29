@@ -1,4 +1,4 @@
-﻿# EcoSoul — Challenge SoulUp | Sprint 3
+﻿# EcoSoul — Challenge SoulUp | Sprint 4
 
 <p align="center">
   <img src="./EcoSoul/public/img/logo.png" alt="Logo EcoSoul" width="220">
@@ -8,13 +8,13 @@
 
 A EcoSoul é uma ideia de app para incentivar as pessoas a usar ônibus, metrô e trem. A proposta é que cada viagem gere ECO Points, que poderão ser trocados por benefícios. O app também mostraria o quanto essas viagens ajudam a reduzir a emissão de CO₂.
 
-Fizemos este projeto para a matéria de **Front-End Design Engineering**, no Challenge SoulUp da FIAP. Nesta Sprint 3, passamos o site da sprint passada para **React + Vite + TypeScript**. Também usamos Tailwind para os estilos e React Hook Form para validar o formulário.
+Fizemos este projeto para a matéria de **Front-End Design Engineering**, no Challenge SoulUp da FIAP. O site é uma SPA em **React + Vite + TypeScript**, estilizada com Tailwind. Na Sprint 4, o front-end passa a consumir a API Java desenvolvida na matéria de Domain Driven Design e fica publicado na Vercel.
 
 ## O que funciona por enquanto
 
-No site, dá para conhecer a ideia da EcoSoul, ver os integrantes, tirar dúvidas no FAQ e acessar a página de contato. O menu, as perguntas do FAQ e a validação do formulário já funcionam.
+No site, dá para conhecer a ideia da EcoSoul, ver os integrantes, tirar dúvidas no FAQ e acessar a página de contato. O menu, as perguntas do FAQ, a validação do formulário e os avisos de redirecionamento já funcionam.
 
-As telas do app são exemplos da nossa proposta. GPS, IA, contas, cálculo de CO₂ e troca de pontos ainda não funcionam de verdade. O formulário só confere os campos, sem enviar ou salvar mensagens. Nesta sprint, não usamos API.
+Na página **Calculadora**, o site se conecta à API Java da matéria de Domain Driven Design: o usuário informa um trajeto de ônibus, metrô ou trem e a API calcula o CO₂ economizado, os pontos e o cashback. Os cálculos ficam salvos no banco Oracle e podem ser listados, vistos em detalhe, editados e excluídos pelo site.
 
 ## Tecnologias utilizadas
 
@@ -26,6 +26,9 @@ As telas do app são exemplos da nossa proposta. GPS, IA, contas, cálculo de CO
 | Tailwind CSS | Estilizar o site e ajustar para diferentes telas |
 | React Router DOM | Trocar de página sem recarregar o site e criar rotas |
 | React Hook Form | Controlar o formulário e conferir os campos |
+| Fetch API | Fazer as requisições HTTP para a API Java (sem Axios) |
+| Context API (`useContext`) | Compartilhar os avisos (redirecionamentos e respostas da API) entre as páginas |
+| Vercel | Publicar o site na nuvem |
 | Oxlint | Verificar possíveis problemas no código |
 | Git e GitHub | Salvar o histórico e organizar o trabalho do grupo |
 
@@ -44,22 +47,36 @@ Challenge_SoulUp/
     │   └── img/                # Logo, fotos e protótipos
     ├── src/
     │   ├── components/
+    │   │   ├── Aviso/          # Mensagem de feedback (sucesso, erro, info)
     │   │   ├── Botao/
     │   │   ├── Cabecalho/
     │   │   ├── CampoFormulario/
     │   │   ├── Card/
     │   │   ├── CardFuncionalidade/
+    │   │   ├── EstadoApi/      # Mensagens de carregando e erro da API
+    │   │   ├── FormularioCalculo/  # Formulário de cadastro e edição de cálculos
     │   │   ├── Menu/
     │   │   ├── PerguntaFaq/
     │   │   ├── Rodape/
     │   │   └── TituloPagina/
+    │   ├── contexto/
+    │   │   ├── AvisoContexto.ts    # Contexto e hook useAviso
+    │   │   └── AvisoProvider.tsx   # Provider dos avisos
     │   ├── css/
     │   │   └── main.css        # Importação e configuração do Tailwind
     │   ├── dados/
+    │   │   ├── calculos.ts     # Nomes dos transportes e formatação de valores
     │   │   ├── faq.ts
     │   │   ├── project.ts
-    │   │   └── tipos.ts
+    │   │   └── tipos.ts        # Interfaces, union e intersection types
+    │   ├── hooks/
+    │   │   └── useRequisicao.ts    # Estado de carregando/erro/sucesso
+    │   ├── services/
+    │   │   ├── api.ts          # Função base de requisição (fetch) e erros
+    │   │   └── calculos.ts     # Endpoints /calculos da API Java
     │   ├── pages/
+    │   │   ├── Calculadora/
+    │   │   ├── CalculoDetalhe/
     │   │   ├── Contato/
     │   │   ├── Faq/
     │   │   ├── Funcionalidade/
@@ -69,7 +86,9 @@ Challenge_SoulUp/
     │   │   ├── Sobre/
     │   │   └── Solucao/
     │   ├── App.tsx             # Layout compartilhado
-    │   └── main.tsx            # Entrada e configuração das rotas
+    │   ├── main.tsx            # Entrada e configuração das rotas
+    │   └── vite-env.d.ts       # Tipagem das variáveis de ambiente
+    ├── .env.example            # Modelo da variável VITE_API_URL
     ├── .gitignore
     ├── .oxlintrc.json
     ├── index.html
@@ -78,6 +97,7 @@ Challenge_SoulUp/
     ├── tsconfig.json
     ├── tsconfig.app.json
     ├── tsconfig.node.json
+    ├── vercel.json             # Faz as rotas da SPA funcionarem na Vercel
     └── vite.config.ts
 ```
 
@@ -111,6 +131,32 @@ npm run dev
 
 Se o PowerShell bloquear o `npm.ps1`, use `npm.cmd i` e `npm.cmd run dev`.
 
+### URL da API
+
+O site lê a URL da API Java da variável `VITE_API_URL`. Para rodar localmente, copie o arquivo `.env.example` para `.env.local` (ele já traz a URL da API publicada). Na Vercel, a mesma variável fica em **Settings > Environment Variables**.
+
+A API fica hospedada no plano gratuito do Render, que desliga o servidor quando não há uso. Por isso, a primeira requisição pode levar até 1 minuto; o site mostra um aviso de carregamento enquanto isso.
+
+## Integração com a API Java
+
+A API é o projeto [CalculadoraCO2](https://github.com/EuThiaguera/CalculadoraCO2) (Java 21, Spring Boot e Oracle). Todas as chamadas passam por `src/services/calculos.ts`, usando `fetch` (sem Axios) e respostas tipadas com os tipos `Calculo` e `DadosCalculo`.
+
+| Verbo | Endpoint | Onde é usado no site |
+| --- | --- | --- |
+| GET | `/calculos` | Lista de cálculos salvos em `/calculadora` |
+| GET | `/calculos/{id}` | Detalhe do cálculo em `/calculadora/:id` |
+| POST | `/calculos` | Formulário "Novo cálculo" |
+| PUT | `/calculos/{id}` | Botão "Editar" no detalhe |
+| DELETE | `/calculos/{id}` | Botão "Excluir" no detalhe |
+
+Exemplo de corpo enviado no POST e no PUT:
+
+```json
+{ "nome": "maria.silva", "tipoTransporte": "ONIBUS", "distanciaKm": 10 }
+```
+
+Enquanto a resposta não chega, a tela mostra "Carregando". Se der erro, aparece a mensagem devolvida pela API (por exemplo, "A distância deve ser maior que zero.") e um botão para tentar de novo. Se não houver cálculos salvos, a lista mostra uma mensagem de lista vazia. Ao abrir um id que não existe, o site volta para `/calculadora` com um aviso.
+
 ### Comandos disponíveis
 
 Rode os comandos dentro da pasta `EcoSoul`:
@@ -127,23 +173,47 @@ Rode os comandos dentro da pasta `EcoSoul`:
 | Rota | Conteúdo |
 | --- | --- |
 | `/` | Home com apresentação, proposta e benefícios |
+| `/home` | Redireciona para `/` |
 | `/integrantes` | Nomes, fotos e redes do grupo |
 | `/sobre` | Problema, solução e diferenciais |
 | `/app` | Telas e funções previstas para o app |
 | `/app/:slug` | Detalhes da função escolhida pelo endereço |
+| `/calculadora` | Formulário de cálculo de CO₂ e lista de cálculos salvos na API |
+| `/calculadora/:id` | Detalhe de um cálculo, com edição e exclusão |
 | `/faq` | Perguntas que abrem a resposta ao clicar |
 | `/contato` | Formulário de exemplo e contatos |
 | Outros caminhos | Página não encontrada |
 
-Exemplos de rotas dinâmicas: `/app/tela-inicial`, `/app/trajeto-ativo`, `/app/impacto-ambiental` e `/app/beneficios`.
+Exemplos de rotas dinâmicas: `/app/tela-inicial`, `/app/trajeto-ativo`, `/app/impacto-ambiental` e `/app/beneficios`. Se o endereço tiver uma função que não existe (por exemplo `/app/teste`), o site volta para `/app` e mostra um aviso explicando o motivo.
 
 ## Como usar
 
+| Link | Endereço |
+| --- | --- |
+| Repositório no GitHub | [github.com/Giovanni0403/Challenge_SoulUp](https://github.com/Giovanni0403/Challenge_SoulUp) |
+| Site publicado na Vercel | _(adicionar a URL depois do deploy)_ |
+| API Java publicada | [calculadoraco2.onrender.com/calculos](https://calculadoraco2.onrender.com/calculos) |
+| Repositório da API Java | [github.com/EuThiaguera/CalculadoraCO2](https://github.com/EuThiaguera/CalculadoraCO2) |
+| Vídeo da Sprint 4 no YouTube (até 3 min) | _(adicionar o link do vídeo)_ |
+
 Use o menu para navegar pelas páginas. Na página APP, clique nas funções para ver os detalhes. No FAQ, clique em uma pergunta para abrir a resposta.
+
+Na página Calculadora, preencha o nome de usuário, escolha o transporte e informe a distância. Ao clicar em "Calcular e salvar", o resultado aparece no aviso do topo e o cálculo entra na lista. Clique em um cálculo da lista para ver os detalhes, editar ou excluir.
 
 Na página de contato, preencha nome, e-mail, telefone e mensagem. Se algum campo estiver errado, aparece um aviso. Você também pode mudar o nível de satisfação e usar o botão Limpar para recomeçar. A mensagem não é enviada de verdade.
 
-## O que fizemos nesta sprint
+## O que fizemos na Sprint 4
+
+- Criamos interfaces (`Pessoa`, `RedesSociais`, `Feature`, `ContactValues`), union types (`VarianteBotao`, `TipoAviso`, `EstadoRequisicao`) e intersection type (`Member = Pessoa & RedesSociais & { phone }`) em `src/dados/tipos.ts`.
+- Criamos um contexto de avisos com `useContext`, usado para dar feedback ao redirecionar o usuário.
+- Ao acessar uma função inexistente em `/app/:slug`, o site redireciona para `/app` com uma mensagem personalizada. A rota `/home` redireciona para `/`.
+- Integramos o site à API Java com `fetch`: a camada `src/services/` faz GET (lista e detalhe), POST, PUT e DELETE em `/calculos`, e o hook `useRequisicao` controla os estados de carregando, erro e sucesso.
+- Criamos as páginas `/calculadora` e `/calculadora/:id`, com formulário validado, lista, detalhe, edição e exclusão.
+- Criamos os tipos da API: `TipoTransporte` (union), `DadosCalculo` (interface) e `Calculo = DadosCalculo & { id, co2Economizado, pontos, cashback }` (intersection).
+- Adicionamos o `vercel.json` para as rotas da SPA funcionarem depois do deploy.
+- Ajustamos a responsividade com as classes `sm:` e `xl:` do Tailwind, além das `md:` e `lg:`.
+
+## O que fizemos na Sprint 3
 
 - Passamos as seis páginas da Sprint 2 para React.
 - Reaproveitamos o cabeçalho, o menu e o rodapé nas páginas.
@@ -158,11 +228,11 @@ Na página de contato, preencha nome, e-mail, telefone e mensagem. Se algum camp
 
 ## Telas e testes
 
-Usamos Tailwind para adaptar o site ao celular, tablet e computador. As classes `md:` começam em 768 px. As classes `lg:` começam em 992 px, como configuramos no `src/css/main.css`.
+Usamos Tailwind para adaptar o site ao celular, tablet e computador. As classes `sm:` começam em 640 px, as `md:` em 768 px e as `xl:` em 1280 px. As classes `lg:` começam em 992 px, como configuramos no `src/css/main.css`.
 
 Conferimos todas as páginas do site e a responsividade no celular, tablet e computador. As páginas funcionaram corretamente nos tamanhos de tela testados.
 
-Na conferência de 12/09/2026, os comandos `npm run build` e `npm run lint` passaram. Esses comandos verificam a compilação e possíveis problemas no código. Os prints abaixo mostram o site em tamanhos de computador, tablet e celular.
+Na conferência de 29/10/2026, os comandos `npm run build` e `npm run lint` passaram. Esses comandos verificam a compilação e possíveis problemas no código. Os prints abaixo mostram o site em tamanhos de computador, tablet e celular.
 
 ## Imagens do projeto
 
@@ -208,4 +278,5 @@ Projeto feito pelo grupo EcoSoul, aproveitando os textos e as imagens da sprint 
 
 ## Vídeo de apresentação
 
-[Assista à apresentação da EcoSoul — Sprint 3](https://youtu.be/a4Mse8BFMpU)
+- Sprint 4: _(adicionar o link do vídeo, com até 3 minutos)_
+- Sprint 3: [Assista à apresentação da EcoSoul — Sprint 3](https://youtu.be/a4Mse8BFMpU)
