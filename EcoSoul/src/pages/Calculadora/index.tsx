@@ -4,10 +4,10 @@ import { Carregando, ErroCarregamento } from '../../components/EstadoApi/EstadoA
 import FormularioCalculo from '../../components/FormularioCalculo/FormularioCalculo';
 import TituloPagina from '../../components/TituloPagina/TituloPagina';
 import { useAviso } from '../../contexto/AvisoContexto';
-import { formatarDinheiro, formatarNumero, nomesTransporte } from '../../dados/calculos';
+import { formatarDinheiro, formatarNumero, nomesTransporte } from '../../dados/calculo';
 import type { DadosCalculo } from '../../dados/tipos';
 import { useRequisicao } from '../../hooks/useRequisicao';
-import { criarCalculo, listarCalculos } from '../../services/calculos';
+import { criarCalculo, listarCalculos } from '../../services/calculo';
 
 export default function Calculadora() {
   const { estado, recarregar } = useRequisicao(listarCalculos);

@@ -6,10 +6,10 @@ import { Carregando, ErroCarregamento } from '../../components/EstadoApi/EstadoA
 import FormularioCalculo from '../../components/FormularioCalculo/FormularioCalculo';
 import TituloPagina from '../../components/TituloPagina/TituloPagina';
 import { useAviso } from '../../contexto/AvisoContexto';
-import { formatarDinheiro, formatarNumero, nomesTransporte } from '../../dados/calculos';
+import { formatarDinheiro, formatarNumero, nomesTransporte } from '../../dados/calculo';
 import type { DadosCalculo } from '../../dados/tipos';
 import { useRequisicao } from '../../hooks/useRequisicao';
-import { atualizarCalculo, buscarCalculo, excluirCalculo } from '../../services/calculos';
+import { atualizarCalculo, buscarCalculo, excluirCalculo } from '../../services/calculo';
 
 export default function CalculoDetalhe() {
   const { id } = useParams<{ id: string }>();

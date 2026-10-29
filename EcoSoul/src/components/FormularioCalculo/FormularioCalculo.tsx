@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Botao } from '../Botao/Botao';
 import CampoFormulario from '../CampoFormulario/CampoFormulario';
-import { nomesTransporte } from '../../dados/calculos';
+import { nomesTransporte } from '../../dados/calculo';
 import type { DadosCalculo, TipoTransporte } from '../../dados/tipos';
 
 type FormularioCalculoProps = {
