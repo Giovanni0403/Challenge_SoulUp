@@ -97,8 +97,8 @@ export default function Sobre() {
           <li>Os pontos podem ser trocados por recompensas.</li>
         </ol>
         <p className="mt-6 text-sm text-teal-100">
-          Essas capacidades fazem parte da proposta. A Sprint 3 apresenta a
-          interface, sem integração com serviços externos.
+          Essas capacidades fazem parte da proposta e ainda não estão no
+          protótipo.
         </p>
       </section>
       <section className="mt-10 rounded-xl bg-white p-7">
