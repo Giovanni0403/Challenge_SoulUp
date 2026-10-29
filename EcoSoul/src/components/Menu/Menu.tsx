@@ -53,6 +53,15 @@ export default function Menu({ open, onNavigate }: MenuProps) {
         </li>
         <li>
           <Link
+            to="/calculadora"
+            onClick={onNavigate}
+            className={estiloLink}
+          >
+            Calculadora
+          </Link>
+        </li>
+        <li>
+          <Link
             to="/faq"
             onClick={onNavigate}
             className={estiloLink}
