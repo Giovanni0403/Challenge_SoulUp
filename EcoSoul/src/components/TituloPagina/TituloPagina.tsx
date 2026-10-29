@@ -21,7 +21,7 @@ export default function TituloPagina({
       <p className="mb-3 text-xs font-bold tracking-[0.16em] text-[#043e42]">
         {eyebrow}
       </p>
-      <h1 className="text-3xl font-bold tracking-tight text-white md:text-5xl">
+      <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
         {title}
       </h1>
       <p className="mt-5 text-lg leading-relaxed text-[#043e42]">
