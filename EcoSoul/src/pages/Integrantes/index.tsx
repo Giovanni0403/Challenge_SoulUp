@@ -10,7 +10,7 @@ export default function Integrantes() {
         description="Quatro pessoas, uma ideia em comum: transformar mobilidade em impacto positivo."
         eyebrow="INTEGRANTES / 1TDSPH"
       />
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {members.map((member) => (
           <Card key={member.rm} className="flex flex-col">
             <img
