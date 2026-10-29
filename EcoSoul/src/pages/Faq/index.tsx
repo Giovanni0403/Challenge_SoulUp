@@ -24,8 +24,8 @@ export default function Faq() {
         eyebrow="FAQ / SUAS DÚVIDAS"
       />
       <p className="mx-auto mb-8 max-w-3xl rounded-lg bg-white/20 p-4 text-sm leading-relaxed text-[#043e42]">
-        As respostas descrevem as regras e funcionalidades planejadas na Sprint
-        2. O aplicativo ainda é um protótipo acadêmico; GPS, IA, contas e
+        As respostas descrevem as regras e funcionalidades planejadas para o
+        aplicativo. Ele ainda é um protótipo acadêmico; GPS, IA e
         resgates não estão implementados nesta versão.
       </p>
       <div className="mx-auto max-w-3xl space-y-9">

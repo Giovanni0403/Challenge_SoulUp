@@ -57,7 +57,7 @@ export default function Home() {
           <p className="mb-5 text-xs font-bold tracking-[0.16em] text-[#043e42]">
             SEU CAMINHO. UM FUTURO MELHOR.
           </p>
-          <h1 className="max-w-2xl text-4xl leading-tight font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+          <h1 className="max-w-2xl text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl xl:text-6xl">
             Cada quilômetro sustentável vira recompensa.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#043e42]">
@@ -95,7 +95,7 @@ export default function Home() {
         <h2 id="destaques" className="mb-6 text-3xl font-bold text-white">
           O que move a EcoSoul
         </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {highlights.map(([icon, title, text]) => (
             <Card key={title}>
               <span className="inline-flex h-12 min-w-12 items-center justify-center rounded-full bg-teal-50 px-2 font-bold text-teal-800">
@@ -138,7 +138,7 @@ export default function Home() {
         <p className="mt-3 text-[#043e42]">
           Benefícios previstos para recompensar escolhas sustentáveis.
         </p>
-        <ul className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {benefits.map((benefit) => (
             <li
               key={benefit}
