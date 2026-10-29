@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Cabecalho from './components/Cabecalho/Cabecalho';
 import Rodape from './components/Rodape/Rodape';
 import { Botao } from './components/Botao/Botao';
+import Aviso from './components/Aviso/Aviso';
 
 export default function App() {
   const [mostrarTopo, setMostrarTopo] = useState(false);
@@ -34,6 +35,7 @@ export default function App() {
         Pular para o conteúdo
       </a>
       <Cabecalho />
+      <Aviso />
       <main
         id="conteudo"
         tabIndex={-1}
