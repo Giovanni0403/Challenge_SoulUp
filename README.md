@@ -88,7 +88,7 @@ Challenge_SoulUp/
     │   ├── App.tsx             # Layout compartilhado
     │   ├── main.tsx            # Entrada e configuração das rotas
     │   └── vite-env.d.ts       # Tipagem das variáveis de ambiente
-    ├── .env.example            # Modelo da variável VITE_API_URL
+    ├── .env                    # URL pública da API (VITE_API_URL)
     ├── .gitignore
     ├── .oxlintrc.json
     ├── index.html
@@ -97,9 +97,10 @@ Challenge_SoulUp/
     ├── tsconfig.json
     ├── tsconfig.app.json
     ├── tsconfig.node.json
-    ├── vercel.json             # Faz as rotas da SPA funcionarem na Vercel
     └── vite.config.ts
 ```
+
+O projeto não contém `vercel.json`; configure o deploy e a variável `VITE_API_URL` diretamente no projeto da Vercel.
 
 ## Como rodar o projeto
 
@@ -133,7 +134,9 @@ Se o PowerShell bloquear o `npm.ps1`, use `npm.cmd i` e `npm.cmd run dev`.
 
 ### URL da API
 
-O site lê a URL da API Java da variável `VITE_API_URL`. Para rodar localmente, copie o arquivo `.env.example` para `.env.local` (ele já traz a URL da API publicada). Na Vercel, a mesma variável fica em **Settings > Environment Variables**.
+O site lê a URL da API Java pela variável `VITE_API_URL`, definida no arquivo `EcoSoul/.env`. Esse arquivo contém a URL pública da API, então quem clonar o repositório não precisa criar um `.env.local` para executar o projeto localmente. Inicie o site dentro da pasta `EcoSoul` com `npm run dev`.
+
+Na Vercel, configure `VITE_API_URL` em **Settings > Environment Variables** e faça um novo deploy para aplicar a variável.
 
 A API fica hospedada no plano gratuito do Render, que desliga o servidor quando não há uso. Por isso, a primeira requisição pode levar até 1 minuto; o site mostra um aviso de carregamento enquanto isso.
 
@@ -192,7 +195,7 @@ Exemplos de rotas dinâmicas: `/app/tela-inicial`, `/app/trajeto-ativo`, `/app/i
 | --- | --- |
 | Repositório no GitHub | [github.com/Giovanni0403/Challenge_SoulUp](https://github.com/Giovanni0403/Challenge_SoulUp) |
 | Site publicado na Vercel | _(adicionar a URL depois do deploy)_ |
-| API Java publicada | [calculadoraco2.onrender.com/calculos](https://calculadoraco2.onrender.com/calculos) |
+| API Java publicada | [calculadoraco2.onrender.com/calculos](https://calculadoraco2.onrender.com/calculos) | Site publicado na Vercel | [EcoSoul](https://seu-projeto.vercel.app) |
 | Repositório da API Java | [github.com/EuThiaguera/CalculadoraCO2](https://github.com/EuThiaguera/CalculadoraCO2) |
 | Vídeo da Sprint 4 no YouTube (até 3 min) | _(adicionar o link do vídeo)_ |
 
@@ -210,21 +213,8 @@ Na página de contato, preencha nome, e-mail, telefone e mensagem. Se algum camp
 - Integramos o site à API Java com `fetch`: a camada `src/services/` faz GET (lista e detalhe), POST, PUT e DELETE em `/calculos`, e o hook `useRequisicao` controla os estados de carregando, erro e sucesso.
 - Criamos as páginas `/calculadora` e `/calculadora/:id`, com formulário validado, lista, detalhe, edição e exclusão.
 - Criamos os tipos da API: `TipoTransporte` (union), `DadosCalculo` (interface) e `Calculo = DadosCalculo & { id, co2Economizado, pontos, cashback }` (intersection).
-- Adicionamos o `vercel.json` para as rotas da SPA funcionarem depois do deploy.
+- Configuramos a URL da API localmente pelo arquivo `EcoSoul/.env`; no deploy, `VITE_API_URL` precisa estar cadastrada nas variáveis de ambiente da Vercel.
 - Ajustamos a responsividade com as classes `sm:` e `xl:` do Tailwind, além das `md:` e `lg:`.
-
-## O que fizemos na Sprint 3
-
-- Passamos as seis páginas da Sprint 2 para React.
-- Reaproveitamos o cabeçalho, o menu e o rodapé nas páginas.
-- Criamos componentes para botões, cards, títulos e campos do formulário.
-- Usamos React Router para navegar sem recarregar o site (SPA).
-- Usamos `useParams` para abrir os detalhes de cada função e `useNavigate` para navegar.
-- Usamos `useState` para controlar o menu, o FAQ, o formulário e o botão de voltar ao topo.
-- Usamos `useEffect` para mudar o título da página e cuidar do foco e da rolagem.
-- Criamos o formulário com React Hook Form e TypeScript, com avisos de erro e formatação do telefone.
-- Ajustamos o menu e a organização dos cards para diferentes telas com Tailwind.
-- Adicionamos descrições nas imagens, nomes nos campos e recursos para facilitar a navegação pelo teclado e por leitores de tela.
 
 ## Telas e testes
 
@@ -261,7 +251,7 @@ Turma: **1TDSPH**.
 | <img src="./EcoSoul/public/img/arthur.jpg" alt="Arthur Palacio" width="90"> | Arthur Palacio | 573441 | [GitHub](https://github.com/ruhtradev10) · [LinkedIn](https://www.linkedin.com/in/arthur-palacio-alves-3911a13b3/) |
 | <img src="./EcoSoul/public/img/thiago.jpg" alt="Thiago Andrade Silva Piedade" width="90"> | Thiago Andrade Silva Piedade | 569741 | [GitHub](https://github.com/Euthiaguera) · [LinkedIn](https://www.linkedin.com/in/thiago-andrade-08b2b6321/) |
 
-Projeto feito pelo grupo EcoSoul, aproveitando os textos e as imagens da sprint passada.
+Projeto feito pelo grupo EcoSoul.
 
 ## Contato
 
@@ -278,5 +268,4 @@ Projeto feito pelo grupo EcoSoul, aproveitando os textos e as imagens da sprint 
 
 ## Vídeo de apresentação
 
-- Sprint 4: _(adicionar o link do vídeo, com até 3 minutos)_
-- Sprint 3: [Assista à apresentação da EcoSoul — Sprint 3](https://youtu.be/a4Mse8BFMpU)
+- Sprint 4: _(adicionar o link do vídeo, com até 3 minutos)
