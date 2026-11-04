@@ -262,10 +262,8 @@ Projeto feito pelo grupo EcoSoul.
 | Arthur Palacio | [rm573441@fiap.com.br](mailto:rm573441@fiap.com.br) |
 | Thiago Andrade Silva Piedade | [rm569741@fiap.com.br](mailto:rm569741@fiap.com.br) |
 
-## Repositório GitHub
-
-[Ver o projeto no GitHub](https://github.com/Giovanni0403/Challenge_SoulUp)
-
-## Vídeo de apresentação
-
-- Sprint 4: _(adicionar o link do vídeo, com até 3 minutos)
+| Repositório no GitHub | [github.com/Giovanni0403/Challenge_SoulUp](https://github.com/Giovanni0403/Challenge_SoulUp) |
+| Site publicado na Vercel | [challenge-soul-up-beta.vercel.app](https://challenge-soul-up-beta.vercel.app) |
+| API Java publicada | [calculadoraco2.onrender.com/calculos](https://calculadoraco2.onrender.com/calculos) |
+| Repositório da API Java | [github.com/EuThiaguera/CalculadoraCO2](https://github.com/EuThiaguera/CalculadoraCO2) |
+| Vídeo da Sprint 4 no YouTube | [Assistir no YouTube](https://youtu.be/ZbAsIQVHqws) |
